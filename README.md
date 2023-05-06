@@ -6,6 +6,38 @@
 [![npm](https://img.shields.io/npm/v/http-proxy-middleware?color=%23CC3534&style=flat-square&logo=npm)](https://www.npmjs.com/package/http-proxy-middleware)
 [![npm (tag)](https://img.shields.io/npm/v/http-proxy-middleware/beta?color=CC3534&logo=npm&style=flat-square)](https://github.com/chimurai/http-proxy-middleware/discussions/768)
 
+```
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+const app = express();
+
+// 用于识别需要进行代理的请求
+const proxyFilter = (path, req) => {
+  // 在这里添加你的逻辑，以确定哪些请求需要进行代理
+  // 例如，你可以根据请求的路径、请求头等信息进行判断
+  return true; // 返回true代表需要进行代理
+};
+
+const proxyOptions = {
+  target: 'http://localhost:3000', // 默认的代理目标
+  changeOrigin: true, // 修改请求头中的主机名和来源
+  router: (req) => {
+    // 从客户端请求中获取目标服务器的URL
+    const targetHost = req.url;
+    return targetHost;
+  },
+};
+
+app.use(createProxyMiddleware(proxyFilter, proxyOptions));
+
+const proxyPort = 8080;
+
+app.listen(proxyPort, () => {
+  console.log(`Forward proxy server listening on port ${proxyPort}`);
+});
+```
+
 Node.js proxying made simple. Configure proxy middleware with ease for [connect](https://github.com/senchalabs/connect), [express](https://github.com/expressjs/express), [next.js](https://github.com/vercel/next.js) and [many more](#compatible-servers).
 
 Powered by the popular Nodejitsu [`http-proxy`](https://github.com/http-party/node-http-proxy). [![GitHub stars](https://img.shields.io/github/stars/http-party/node-http-proxy.svg?style=social&label=Star)](https://github.com/http-party/node-http-proxy)
